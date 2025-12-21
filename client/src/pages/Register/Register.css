@@ -1,0 +1,144 @@
+/* Register Page - Humbot Green Style */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0A0E14 !important;
+  padding: 20px;
+}
+
+.auth-container {
+  max-width: 480px;
+  width: 100%;
+}
+
+.auth-card {
+  background: #151B23 !important;
+  border:  2px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 14px;
+  padding: 48px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+.auth-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #E4E7EB !important;
+  margin-bottom: 8px;
+  text-align:  center;
+}
+
+.auth-subtitle {
+  color: #9AA5B1 !important;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap:  24px;
+}
+
+. form-group {
+  display:  flex;
+  flex-direction:  column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #9AA5B1 !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+}
+
+.form-group input,
+.form-group select {
+  padding: 14px 16px !important;
+  background: #0F1419 !important;
+  border: 2px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 10px !important;
+  color: #E4E7EB !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.form-group input:focus,
+. form-group select:focus {
+  outline: none !important;
+  border-color: #00D084 !important;
+  background: #1F2933 ! important;
+  box-shadow:  0 0 0 4px rgba(0, 208, 132, 0.1) !important;
+}
+
+.form-group input::placeholder {
+  color: #616E7C ! important;
+}
+
+.btn-submit,
+button[type="submit"] {
+  padding: 16px !important;
+  background:  linear-gradient(135deg, #00D084 0%, #00B570 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color:  white !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 20px rgba(0, 208, 132, 0.3) !important;
+  margin-top: 8px !important;
+}
+
+.btn-submit:hover,
+button[type="submit"]:hover {
+  transform:  translateY(-2px) !important;
+  box-shadow: 0 6px 24px rgba(0, 208, 132, 0.4) !important;
+}
+
+.btn-submit:disabled,
+button[type="submit"]:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 24px;
+  color: #9AA5B1 !important;
+}
+
+.auth-link a {
+  color:  #00D084 !important;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  background: rgba(240, 68, 56, 0.1) !important;
+  border: 1px solid #F04438 !important;
+  border-radius: 10px;
+  padding: 14px;
+  color: #F04438 !important;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 32px 24px;
+  }
+  
+  . auth-title {
+    font-size: 2rem;
+  }
+}

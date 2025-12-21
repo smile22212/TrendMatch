@@ -1,0 +1,136 @@
+/* Login Page - Humbot Green Style */
+
+.signup-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark);
+  padding: 20px;
+}
+
+.signup-container {
+  background: var(--bg-card);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  max-width:  480px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+}
+
+.signup-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.signup-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.signup-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap:  24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color:  var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  padding: 14px 16px;
+  background: var(--bg-input);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 4px rgba(0, 208, 132, 0.1);
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.btn-signup {
+  padding: 16px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-green);
+  margin-top: 8px;
+}
+
+.btn-signup:hover {
+  transform:  translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 208, 132, 0.4);
+}
+
+.btn-signup:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+. signup-footer {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--text-secondary);
+}
+
+.signup-footer a {
+  color: var(--primary-green);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.signup-footer a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  background: rgba(240, 68, 56, 0.1);
+  border: 1px solid var(--error);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  color: var(--error);
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 32px 24px;
+  }
+  
+  .signup-header h1 {
+    font-size: 2rem;
+  }
+}

@@ -1,20 +1,22 @@
+require('dotenv').config({ override: true, debug: true });
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db.js');
-require('dotenv').config();
+const connectDB = require('./config/db');
 
 const app = express();
 
+// Connect Database
 connectDB();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('TrendMatch API is running');
-});
-
+// Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/campaigns', require('./routes/campaigns'));
+app.use('/api/applications', require('./routes/applications'));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log('Server running on port ' + PORT));
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

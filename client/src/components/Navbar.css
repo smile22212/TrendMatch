@@ -1,0 +1,72 @@
+/* Navbar - Humbot Green Style */
+
+.navbar {
+  background: #151B23;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-brand {
+  font-size: 1.8rem;
+  font-weight:  800;
+  background: linear-gradient(135deg, #00D084 0%, #00B570 100%);
+  -webkit-background-clip:  text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.nav-link {
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #9AA5B1;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  border-color: #00D084;
+  color: #00D084;
+  background: rgba(0, 208, 132, 0.05);
+}
+
+.nav-link.active {
+  background: linear-gradient(135deg, #00D084 0%, #00B570 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 20px rgba(0, 208, 132, 0.3);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .navbar-links {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .nav-link {
+    width: 100%;
+    text-align: center;
+  }
+}

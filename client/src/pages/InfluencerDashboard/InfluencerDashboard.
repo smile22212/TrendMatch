@@ -1,0 +1,23 @@
+  
+  // Check if influencer already applied to a campaign
+  const hasApplied = (campaignId) => {
+    return applications.find(app => app.campaign?._id === campaignId);
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'pending': return 'status-pending';
+      case 'accepted': return 'status-accepted';
+      case 'rejected': return 'status-rejected';
+      default: return '';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch(status) {
+      case 'pending':  return '⏳';
+      case 'accepted': return '✅';
+      case 'rejected': return '❌';
+      default: return '';
+    }
+  };

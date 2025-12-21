@@ -1,0 +1,184 @@
+/* Landing Page - Humbot Green Style */
+
+.landing {
+  min-height: 100vh;
+  background: #0A0E14;
+  color: #E4E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.landing-container {
+  max-width: 1200px;
+  text-align: center;
+}
+
+.landing-title {
+  font-size: 4rem;
+  font-weight:  900;
+  margin-bottom: 24px;
+  line-height: 1.2;
+  color: #E4E7EB;
+}
+
+.brand-name {
+  background: linear-gradient(135deg, #00D084 0%, #00B570 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-subtitle {
+  font-size: 1.8rem;
+  color: #9AA5B1;
+  margin-bottom: 16px;
+  font-weight:  600;
+}
+
+.landing-description {
+  font-size: 1.2rem;
+  color: #616E7C;
+  max-width: 700px;
+  margin: 0 auto 48px;
+  line-height: 1.8;
+}
+
+/* Buttons */
+.landing-buttons {
+  display: flex;
+  gap: 24px;
+  justify-content:  center;
+  flex-wrap: wrap;
+  margin-bottom: 80px;
+}
+
+.btn {
+  padding: 18px 48px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00D084 0%, #00B570 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 6px 24px rgba(0, 208, 132, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 32px rgba(0, 208, 132, 0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 3px solid #00D084;
+  color: #00D084;
+}
+
+. btn-secondary:hover {
+  background: rgba(0, 208, 132, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 24px rgba(0, 208, 132, 0.3);
+}
+
+/* Features Section */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-top: 60px;
+}
+
+.feature {
+  background: #151B23;
+  border:  2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 48px 32px;
+  text-align:  center;
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.feature:hover {
+  transform: translateY(-8px);
+  border-color: #00D084;
+  box-shadow: 0 12px 40px rgba(0, 208, 132, 0.3);
+}
+
+.feature-icon {
+  font-size: 4. 5rem;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 4px 12px rgba(0, 208, 132, 0.3));
+}
+
+.feature h3 {
+  font-size: 1.8rem;
+  margin-bottom:  16px;
+  background: linear-gradient(135deg, #00D084 0%, #00B570 100%);
+  -webkit-background-clip:  text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+.feature p {
+  color: #9AA5B1;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width:  768px) {
+  .landing-title {
+    font-size: 2.5rem;
+  }
+  
+  . landing-subtitle {
+    font-size: 1.3rem;
+  }
+  
+  .landing-description {
+    font-size: 1rem;
+  }
+  
+  .features {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .feature {
+    padding: 32px 24px;
+  }
+  
+  .landing-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-title {
+    font-size:  2rem;
+  }
+  
+  .landing-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .feature h3 {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,50 @@
+                  {filteredCampaigns.map((campaign) => {
+                    const application = hasApplied(campaign._id);
+                    const alreadyApplied = !!application;
+
+                    return (
+                    <div key={campaign._id} className={`campaign-card ${alreadyApplied ? 'applied' : ''}`}>
+                      <div className="campaign-brand">
+                        <div className="brand-avatar">
+                          {campaign. brand?.name?. charAt(0) || 'B'}
+                        </div>
+                        <div>
+                          <h4>{campaign.brand?. name || 'Brand'}</h4>
+                          <span className="brand-email">{campaign. brand?.email}</span>
+                        </div>
+                      </div>
+                      
+                      {alreadyApplied && (
+                        <div className={`applied-badge ${getStatusColor(application.status)}`}>
+                          {getStatusIcon(application.status)} {application.status. toUpperCase()}
+                        </div>
+                      )}
+                      
+                      <h3 className="campaign-title">{campaign. title}</h3>
+                      <p className="campaign-description">{campaign.description}</p>
+                      
+                      <div className="campaign-requirements">
+                        <strong>Requirements:</strong>
+                        <p>{campaign.requirements}</p>
+                      </div>
+                      
+                      <div className="campaign-meta">
+                        <span className="budget">💰 ${campaign.budget}</span>
+                        <span className="deadline">📅 {new Date(campaign.deadline).toLocaleDateString()}</span>
+                      </div>
+                      
+                      {alreadyApplied ?  (
+                        <button className="btn-applied" disabled>
+                          Already Applied
+                        </button>
+                      ) : (
+                        <button 
+                          className="btn-apply"
+                          onClick={() => handleApplyClick(campaign)}
+                        >
+                          Apply Now
+                        </button>
+                      )}
+                    </div>
+                    );
+                  })}
