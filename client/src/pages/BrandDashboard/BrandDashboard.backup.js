@@ -13,19 +13,15 @@ const BrandDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-
-  // Filters state
-  const [filters, setFilters] = useState({
-    search: "",
-    minFollowers: "",
-    maxFollowers: "",
-    minEngagement: "",
-    selectedNiches: [],
-    tier: "All Tiers",
-    location:  "All Locations"
-  });
-
   // Search & Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [minFollowers, setMinFollowers] = useState('');
+  const [maxFollowers, setMaxFollowers] = useState('');
+  const [selectedNiches, setSelectedNiches] = useState([]);
+  const [minEngagement, setMinEngagement] = useState('');
+  const [selectedTier, setSelectedTier] = useState('all');
+  const [selectedLocation, setSelectedLocation] = useState('all');
+
   // Campaign form states
   const [campaignForm, setCampaignForm] = useState({
     title: '',
@@ -159,44 +155,12 @@ const BrandDashboard = () => {
   };
 
   const toggleNiche = (niche) => {
-    setFilters(prev => ({
-      ...prev,
-      selectedNiches:  prev.selectedNiches.includes(niche)
-        ? prev.selectedNiches.filter(n => n !== niche)
-        : [...prev.selectedNiches, niche]
-    }));
-  };
-
-  const resetFilters = () => {
-    setFilters({
-      search: "",
-      minFollowers: "",
-      maxFollowers: "",
-      minEngagement: "",
-      selectedNiches:  [],
-      tier: "All Tiers",
-      location:  "All Locations"
-    });
-  };
-
-  // Filter influencers based on all criteria
-  const filteredInfluencers = influencers.filter(influencer => {
-    if (filters.search && !influencer.name.toLowerCase().includes(filters.search.toLowerCase()) && 
-        !influencer.username.toLowerCase().includes(filters.search.toLowerCase())) {
-      return false;
+    if (selectedNiches.includes(niche)) {
+      setSelectedNiches(selectedNiches.filter(n => n !== niche));
+    } else {
+      setSelectedNiches([... selectedNiches, niche]);
     }
-    if (filters.minFollowers && influencer.followers < parseInt(filters.minFollowers)) return false;
-    if (filters.maxFollowers && influencer.followers > parseInt(filters.maxFollowers)) return false;
-    if (filters.minEngagement && influencer.engagement < parseFloat(filters.minEngagement)) return false;
-    if (filters. selectedNiches.length > 0) {
-      const hasMatchingNiche = filters.filters.selectedNiches.some(niche => influencer.niches.includes(niche));
-      if (!hasMatchingNiche) return false;
-    }
-    if (filters.tier !== "All Tiers" && influencer.tier !== filters.tier) return false;
-    if (filters.location !== "All Locations" && influencer.location !== filters.location) return false;
-    return true;
-  });
-
+  };
 
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -215,11 +179,53 @@ const BrandDashboard = () => {
     return colors[tier] || '#9CA3AF';
   };
 
-  const handleViewProfile = (influencer) => {
+  const getFilteredInfluencers = () => {
+    let filtered = [... influencers];
 
-    alert(`👤 ${influencer.name}\n\nUsername: @${influencer.username}\nFollowers: ${formatNumber(influencer.followers)}\nEngagement: ${influencer.engagement}%\nLocation: ${influencer. location}\nPrice:  $${influencer.priceRange. min} - $${influencer. priceRange.max}`);
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(inf =>
+        inf.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        inf.username.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Followers filter
+    if (minFollowers) {
+      filtered = filtered. filter(inf => inf.followers >= parseInt(minFollowers));
+    }
+    if (maxFollowers) {
+      filtered = filtered.filter(inf => inf.followers <= parseInt(maxFollowers));
+    }
+
+    // Niche filter
+    if (selectedNiches.length > 0) {
+      filtered = filtered.filter(inf =>
+        inf.niche.some(n => selectedNiches.includes(n))
+      );
+    }
+
+    // Engagement filter
+    if (minEngagement) {
+      filtered = filtered. filter(inf => inf.engagement >= parseFloat(minEngagement));
+    }
+
+    // Tier filter
+    if (selectedTier !== 'all') {
+      filtered = filtered. filter(inf => inf.tier === selectedTier);
+    }
+
+    // Location filter
+    if (selectedLocation !== 'all') {
+      filtered = filtered.filter(inf => inf.location === selectedLocation);
+    }
+
+    return filtered;
   };
 
+  const handleViewProfile = (influencer) => {
+    alert(`👤 ${influencer.name}\n\nUsername: @${influencer.username}\nFollowers: ${formatNumber(influencer.followers)}\nEngagement: ${influencer.engagement}%\nLocation: ${influencer. location}\nPrice:  $${influencer.priceRange. min} - $${influencer. priceRange.max}`);
+  };
 
   const handleSendRequest = (influencer) => {
     if (campaigns.length === 0) {
@@ -308,10 +314,9 @@ const BrandDashboard = () => {
                 <input
                   type="text"
                   placeholder="Search by name or username..."
-                  value={filters.search}
-                  onChange={(e) => setFilters({...filters, search: e.target.value})}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e. target.value)}
                   className="search-input"
-
                 />
               </div>
 
@@ -320,22 +325,19 @@ const BrandDashboard = () => {
                   <label>Min Followers</label>
                   <input
                     type="number"
-                    value={filters.minFollowers}
-                    onChange={(e) => setFilters({...filters, minFollowers: e.target.value})}
-                  />
-
+                    placeholder="e.g.  10000"
+                    value={minFollowers}
+                    onChange={(e) => setMinFollowers(e.target.value)}
                   />
                 </div>
 
                 <div className="filter-group">
                   <label>Max Followers</label>
-                    value={filters.maxFollowers}
-                    onChange={(e) => setFilters({...filters, maxFollowers: e.target. value})}
-                  />
-
-                    value={filters.maxFollowers}
-                    onChange={(e) => setFilters({...filters, maxFollowers: e.target.value})}
-
+                  <input
+                    type="number"
+                    placeholder="e. g. 100000"
+                    value={maxFollowers}
+                    onChange={(e) => setMaxFollowers(e.target. value)}
                   />
                 </div>
               </div>
@@ -345,8 +347,8 @@ const BrandDashboard = () => {
                 <div className="niche-pills">
                   {niches. map(niche => (
                     <button
-
-                      className={`niche-pill ${filters.selectedNiches.includes(niche) ? 'active' : ''}`}
+                      key={niche}
+                      className={`niche-pill ${selectedNiches.includes(niche) ? 'active' : ''}`}
                       onClick={() => toggleNiche(niche)}
                     >
                       {niche}
@@ -360,15 +362,15 @@ const BrandDashboard = () => {
                 <input
                   type="number"
                   placeholder="e.g.  5"
-                  value={filters.minEngagement}
-                  onChange={(e) => setFilters({...filters, minEngagement: e.target.value})}
+                  value={minEngagement}
+                  onChange={(e) => setMinEngagement(e.target.value)}
                   step="0.1"
-
                 />
               </div>
 
               <div className="filter-group">
-                <select value={filters.tier} onChange={(e) => setFilters({...filters, tier: e.target.value})}>
+                <label>Influencer Tier</label>
+                <select value={selectedTier} onChange={(e) => setSelectedTier(e.target.value)}>
                   {tiers.map(tier => (
                     <option key={tier} value={tier}>
                       {tier === 'all' ? 'All Tiers' : tier}
@@ -377,10 +379,9 @@ const BrandDashboard = () => {
                 </select>
               </div>
 
-                <label>Location</label>
-
               <div className="filter-group">
-                <select value={filters.location} onChange={(e) => setFilters({...filters, location: e.target.value})}>
+                <label>Location</label>
+                <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)}>
                   {locations. map(loc => (
                     <option key={loc} value={loc}>
                       {loc === 'all' ? 'All Locations' : loc}
@@ -389,9 +390,14 @@ const BrandDashboard = () => {
                 </select>
               </div>
 
-              <button className="btn-reset" onClick={resetFilters}>
-                🔄 Reset Filters
-
+              <button className="btn-reset" onClick={() => {
+                setSearchTerm('');
+                setMinFollowers('');
+                setMaxFollowers('');
+                setSelectedNiches([]);
+                setMinEngagement('');
+                setSelectedTier('all');
+                setSelectedLocation('all');
               }}>
                 🔄 Reset Filters
               </button>
@@ -400,14 +406,14 @@ const BrandDashboard = () => {
             {/* Results */}
             <div className="results-section">
               <div className="results-header">
-                <h3>Found {filteredInfluencers.length} Influencers</h3>
+                <h3>Found {getFilteredInfluencers().length} Influencers</h3>
               </div>
 
               {loading ? (
                 <div className="loading">Loading influencers...</div>
               ) : (
                 <div className="influencer-grid">
-                  {filteredInfluencers.map(influencer => (
+                  {getFilteredInfluencers().map(influencer => (
                     <div key={influencer._id} className="influencer-card">
                       <div className="influencer-header">
                         <img src={influencer.avatar} alt={influencer.name} className="influencer-avatar" />

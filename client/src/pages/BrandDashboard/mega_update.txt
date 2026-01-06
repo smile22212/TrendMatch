@@ -1,0 +1,23 @@
+// Add after the existing useState declarations (around line 10-20)
+
+  // Filters state
+  const [filters, setFilters] = useState({
+    search: '',
+    minFollowers:  '',
+    maxFollowers: '',
+    minEngagement: '',
+    selectedNiches: [],
+    tier: 'All Tiers',
+    location: 'All Locations'
+  });
+
+  // Modals state
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedInfluencer, setSelectedInfluencer] = useState(null);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [requestForm, setRequestForm] = useState({
+    campaignId: '',
+    message:  '',
+    budget: ''
+  });
+

@@ -3,7 +3,6 @@ import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './InfluencerDashboard.css';
-import InstagramProfile from './InstagramProfile';
 
 const InfluencerDashboard = () => {
   const { user, logoutUser } = useContext(AuthContext);
@@ -443,20 +442,14 @@ const InfluencerDashboard = () => {
             </div>
           )}
 
+          {activeTab === 'profile' && (
             <div className="profile-section">
-              <div className="profile-header">
-                <div className="basic-profile">
-                  <div className="profile-avatar">{user?. name?. charAt(0)}</div>
-                  <div>
-                    <h2>{user?.name}</h2>
-                    <p>{user?. email}</p>
-                    <span className="role-badge">Influencer</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="instagram-section">
-                <InstagramProfile userId={user?._id} />
+              <h2>Influencer Profile</h2>
+              <div className="profile-card">
+                <div className="profile-avatar">{user?.name?. charAt(0)}</div>
+                <h3>{user?.name}</h3>
+                <p>{user?.email}</p>
+                <span className="role-badge">Influencer</span>
               </div>
             </div>
           )}

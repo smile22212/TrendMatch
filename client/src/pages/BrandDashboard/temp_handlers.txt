@@ -1,0 +1,25 @@
+
+  // Add these functions after fetchInfluencers function
+  
+  const handleViewProfile = (influencer) => {
+    alert(`Viewing profile of ${influencer.name}\n\n` +
+          `Username: @${influencer.username}\n` +
+          `Followers: ${formatNumber(influencer.followers)}\n` +
+          `Engagement: ${influencer.engagement}%\n` +
+          `Location: ${influencer.location}\n` +
+          `Tier: ${influencer.tier}`);
+    // TODO: Navigate to influencer profile page or show detailed modal
+  };
+
+  const handleSendRequest = (influencer) => {
+    if (campaigns.length === 0) {
+      alert('Please create a campaign first before sending requests to influencers! ');
+      setShowCreateModal(true);
+      return;
+    }
+    
+    alert(`Sending collaboration request to ${influencer.name}!\n\n` +
+          `This will open a form to select your campaign and customize your message.`);
+    // TODO: Open modal to select campaign and send request
+  };
+
