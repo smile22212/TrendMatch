@@ -19,6 +19,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/campaigns', require('./routes/campaigns'));
 app.use('/api/applications', require('./routes/applications'));
 app.use('/api/influencer-profile', require('./routes/influencerProfile'));
+app.use('/api/brand-profile', require('./routes/brandProfile'));
 
 // Test route
 app.get('/', (req, res) => {

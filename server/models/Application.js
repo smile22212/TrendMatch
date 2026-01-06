@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const ApplicationSchema = new mongoose.Schema({
   campaign: {
-    type:  mongoose.Schema.Types.ObjectId,
+    type: mongoose. Schema.Types.ObjectId,
     ref: 'Campaign',
     required: true
   },
@@ -11,16 +11,23 @@ const ApplicationSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  message: {
-    type: String,
-    required:  true
+  influencerProfile: {
+    type: mongoose. Schema.Types.ObjectId,
+    ref: 'InfluencerProfile'
   },
   status: {
     type: String,
     enum: ['pending', 'accepted', 'rejected'],
     default: 'pending'
   },
-  createdAt: {
+  message: {
+    type: String
+  },
+  createdAt:  {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }

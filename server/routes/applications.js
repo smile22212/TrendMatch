@@ -83,4 +83,65 @@ router.get('/my-applications', auth, async (req, res) => {
   }
 });
 
+// @route   GET /api/applications/campaign/:campaignId
+// @desc    Get all applications for a specific campaign
+// @access  Private (Brand only)
+router.get('/campaign/:campaignId', auth, async (req, res) => {
+  try {
+    const campaign = await Campaign.findById(req.params.campaignId);
+    
+    if (!campaign) {
+      return res.status(404).json({ msg: 'Campaign not found' });
+    }
+
+    // Check if user owns this campaign
+    if (campaign. brand.toString() !== req.user.id) {
+      return res. status(403).json({ msg: 'Not authorized' });
+    }
+
+    const applications = await Application.find({ campaign: req.params.campaignId })
+      .populate('influencer', 'name email')
+      .populate('influencerProfile')
+      .sort({ createdAt: -1 });
+
+    res.json(applications);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// @route   PUT /api/applications/:id/status
+// @desc    Update application status (accept/reject)
+// @access  Private (Brand only)
+router.put('/:id/status', auth, async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (! ['accepted', 'rejected'].includes(status)) {
+      return res.status(400).json({ msg: 'Invalid status' });
+    }
+
+    const application = await Application.findById(req.params.id).populate('campaign');
+
+    if (!application) {
+      return res.status(404).json({ msg: 'Application not found' });
+    }
+
+    // Check if user owns the campaign
+    if (application.campaign. brand.toString() !== req.user.id) {
+      return res.status(403).json({ msg: 'Not authorized' });
+    }
+
+    application.status = status;
+    application.updatedAt = Date.now();
+    await application.save();
+
+    res.json(application);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 module.exports = router;
