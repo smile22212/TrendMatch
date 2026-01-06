@@ -6,6 +6,7 @@ import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import BrandDashboard from './pages/BrandDashboard/BrandDashboard';
 import InfluencerDashboard from './pages/InfluencerDashboard/InfluencerDashboard';
+import Analytics from './pages/Analytics/Analytics';
 import './App.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/brand-dashboard" element={<BrandDashboard />} />
             <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />
+            <Route path="/analytics" element={<Analytics />} />
           </Routes>
         </div>
       </Router>

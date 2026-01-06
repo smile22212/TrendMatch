@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express. Router();
 const Campaign = require('../models/Campaign');
 const auth = require('../middleware/auth');
 
@@ -8,7 +8,6 @@ const auth = require('../middleware/auth');
 // @access  Private (Brand only)
 router.post('/', auth, async (req, res) => {
   try {
-    // Check if user is a brand
     if (req.user.role !== 'Brand') {
       return res.status(403).json({ msg: 'Only brands can create campaigns' });
     }
@@ -25,7 +24,6 @@ router.post('/', auth, async (req, res) => {
     });
 
     await campaign.save();
-
     res.json(campaign);
   } catch (err) {
     console.error(err.message);
@@ -33,19 +31,44 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// @route   GET /api/campaigns/my-campaigns
+// @desc    Get all campaigns for logged-in brand
+// @access  Private
+router. get("/my-campaigns", auth, async (req, res) => {
+  try {
+    const campaigns = await Campaign.find({ brand: req.user.id }).sort({ createdAt: -1 });
+    res.json(campaigns);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+
+// @route   GET /api/campaigns/my-campaigns
+// @desc    Get all campaigns for logged-in brand
+// @access  Private
+router.get('/my-campaigns', auth, async (req, res) => {
+  try {
+    const campaigns = await Campaign.find({ brand: req.user.id }).sort({ createdAt: -1 });
+    res.json(campaigns);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 // @route   GET /api/campaigns
-// @desc    Get all campaigns for a brand
+// @desc    Get all campaigns
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
     let campaigns;
     
     if (req.user.role === 'Brand') {
-      // Brands see only their campaigns
       campaigns = await Campaign.find({ brand: req.user.id }).sort({ createdAt: -1 });
     } else {
-      // Influencers see all active campaigns
-      campaigns = await Campaign. find({ status: 'active' })
+      campaigns = await Campaign.find({ status: 'active' })
         .populate('brand', 'name email')
         .sort({ createdAt: -1 });
     }
@@ -83,24 +106,22 @@ router.get('/:id', auth, async (req, res) => {
 // @access  Private (Brand only - own campaigns)
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const campaign = await Campaign.findById(req.params.id);
+    const campaign = await Campaign.findById(req. params.id);
 
     if (!campaign) {
-      return res.status(404).json({ msg: 'Campaign not found' });
+      return res. status(404).json({ msg: 'Campaign not found' });
     }
 
-    // Check if the brand owns this campaign
     if (campaign.brand.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
 
     await campaign.deleteOne();
-
     res.json({ msg: 'Campaign removed' });
   } catch (err) {
     console.error(err.message);
     if (err.kind === 'ObjectId') {
-      return res. status(404).json({ msg: 'Campaign not found' });
+      return res.status(404).json({ msg: 'Campaign not found' });
     }
     res.status(500).send('Server error');
   }
