@@ -2,7 +2,28 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar, Pie } from 'react-chartjs-2';
 import './BrandDashboard.css';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const BrandDashboard = () => {
   const { user, logoutUser } = useContext(AuthContext);
@@ -13,34 +34,26 @@ const BrandDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-
-  // Filters state
   const [filters, setFilters] = useState({
     search: "",
     minFollowers: "",
     maxFollowers: "",
     minEngagement: "",
     selectedNiches: [],
-    tier: "All Tiers",
-    location:  "All Locations"
   });
 
-  // Search & Filter states
-  // Campaign form states
   const [campaignForm, setCampaignForm] = useState({
     title: '',
     description: '',
-    budget:  '',
+    budget: '',
     deadline: '',
     requirements: ''
   });
 
   const niches = ['Fashion', 'Beauty', 'Lifestyle', 'Tech', 'Food', 'Travel', 'Fitness', 'Gaming'];
-  const tiers = ['all', 'Nano', 'Micro', 'Mid-tier', 'Macro', 'Mega'];
-  const locations = ['all', 'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany'];
 
   useEffect(() => {
-    if (!user || user.role !== 'Brand') {
+    if (! user || user.role !== 'Brand') {
       navigate('/login');
     } else {
       fetchCampaigns();
@@ -51,7 +64,7 @@ const BrandDashboard = () => {
   const fetchCampaigns = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5001/api/campaigns', {
+      const res = await axios.get('http://localhost:5001/api/campaigns/my-campaigns', {
         headers:  { 'x-auth-token': token }
       });
       setCampaigns(res.data);
@@ -63,7 +76,6 @@ const BrandDashboard = () => {
   const fetchInfluencers = async () => {
     setLoading(true);
     try {
-      // Mock influencer data - replace with real API
       const mockInfluencers = [
         {
           _id: '1',
@@ -82,7 +94,7 @@ const BrandDashboard = () => {
           _id: '2',
           username: 'beautyguru',
           name: 'Beauty Guru',
-          avatar: 'https://i.pravatar.cc/150?img=32',
+          avatar:  'https://i.pravatar.cc/150?img=32',
           followers: 125000,
           engagement: 12.3,
           niche: ['Beauty', 'Makeup', 'Skincare'],
@@ -125,9 +137,9 @@ const BrandDashboard = () => {
           followers: 67000,
           engagement: 11.5,
           niche: ['Food', 'Travel', 'Lifestyle'],
-          location: 'Australia',
+          location:  'Australia',
           verified: true,
-          tier:  'Mid-tier',
+          tier: 'Mid-tier',
           priceRange: { min: 720, max: 1080 }
         },
         {
@@ -141,7 +153,7 @@ const BrandDashboard = () => {
           location: 'Germany',
           verified: false,
           tier: 'Micro',
-          priceRange: { min: 380, max: 570 }
+          priceRange:  { min: 380, max: 570 }
         }
       ];
       
@@ -161,7 +173,7 @@ const BrandDashboard = () => {
   const toggleNiche = (niche) => {
     setFilters(prev => ({
       ...prev,
-      selectedNiches:  prev.selectedNiches.includes(niche)
+      selectedNiches: prev. selectedNiches.includes(niche)
         ? prev.selectedNiches.filter(n => n !== niche)
         : [...prev.selectedNiches, niche]
     }));
@@ -169,34 +181,28 @@ const BrandDashboard = () => {
 
   const resetFilters = () => {
     setFilters({
-      search: "",
+      search:  "",
       minFollowers: "",
       maxFollowers: "",
       minEngagement: "",
-      selectedNiches:  [],
-      tier: "All Tiers",
-      location:  "All Locations"
+      selectedNiches: [],
     });
   };
 
-  // Filter influencers based on all criteria
-  const filteredInfluencers = influencers.filter(influencer => {
-    if (filters.search && !influencer.name.toLowerCase().includes(filters.search.toLowerCase()) && 
+  const filteredInfluencers = influencers. filter(influencer => {
+    if (filters.search && ! influencer.name.toLowerCase().includes(filters.search.toLowerCase()) && 
         !influencer.username.toLowerCase().includes(filters.search.toLowerCase())) {
       return false;
     }
-    if (filters.minFollowers && influencer.followers < parseInt(filters.minFollowers)) return false;
-    if (filters.maxFollowers && influencer.followers > parseInt(filters.maxFollowers)) return false;
-    if (filters.minEngagement && influencer.engagement < parseFloat(filters.minEngagement)) return false;
-    if (filters. selectedNiches.length > 0) {
-      const hasMatchingNiche = filters.filters.selectedNiches.some(niche => influencer.niches.includes(niche));
+    if (filters.minFollowers && influencer.followers < parseInt(filters. minFollowers)) return false;
+    if (filters. maxFollowers && influencer.followers > parseInt(filters.maxFollowers)) return false;
+    if (filters.minEngagement && influencer.engagement < parseFloat(filters. minEngagement)) return false;
+    if (filters.selectedNiches.length > 0) {
+      const hasMatchingNiche = filters.selectedNiches.some(niche => influencer.niche.includes(niche));
       if (!hasMatchingNiche) return false;
     }
-    if (filters.tier !== "All Tiers" && influencer.tier !== filters.tier) return false;
-    if (filters.location !== "All Locations" && influencer.location !== filters.location) return false;
     return true;
   });
-
 
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -208,18 +214,16 @@ const BrandDashboard = () => {
     const colors = {
       'Nano': '#9CA3AF',
       'Micro': '#60A5FA',
-      'Mid-tier': '#34D399',
-      'Macro': '#F59E0B',
+      'Mid-tier': '#4ade80',
+      'Macro':  '#F59E0B',
       'Mega': '#EF4444'
     };
     return colors[tier] || '#9CA3AF';
   };
 
   const handleViewProfile = (influencer) => {
-
-    alert(`👤 ${influencer.name}\n\nUsername: @${influencer.username}\nFollowers: ${formatNumber(influencer.followers)}\nEngagement: ${influencer.engagement}%\nLocation: ${influencer. location}\nPrice:  $${influencer.priceRange. min} - $${influencer. priceRange.max}`);
+    alert(`👤 ${influencer.name}\n\nUsername: @${influencer.username}\nFollowers: ${formatNumber(influencer.followers)}\nEngagement: ${influencer.engagement}%\nLocation: ${influencer.location}\nPrice:  $${influencer.priceRange.min} - $${influencer.priceRange.max}`);
   };
-
 
   const handleSendRequest = (influencer) => {
     if (campaigns.length === 0) {
@@ -227,21 +231,101 @@ const BrandDashboard = () => {
       setShowCreateModal(true);
       return;
     }
-    alert(`✅ Sending request to ${influencer.name}! \n\nThis feature will be fully implemented soon.`);
+    alert(`✅ Sending request to ${influencer.name}!`);
   };
 
   const handleCreateCampaign = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage. getItem('token');
       await axios.post('http://localhost:5001/api/campaigns', campaignForm, {
         headers:  { 'x-auth-token': token }
       });
       setShowCreateModal(false);
-      setCampaignForm({ title: '', description: '', budget: '', deadline:  '', requirements: '' });
+      setCampaignForm({ title: '', description: '', budget:  '', deadline: '', requirements: '' });
       fetchCampaigns();
+      alert('✅ Campaign created successfully!');
     } catch (err) {
       console.error('Error creating campaign:', err);
+      alert('❌ Error creating campaign');
+    }
+  };
+
+  const handleDeleteCampaign = async (id) => {
+    if (window.confirm('Are you sure you want to delete this campaign?')) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`http://localhost:5001/api/campaigns/${id}`, {
+          headers: { 'x-auth-token': token }
+        });
+        fetchCampaigns();
+        alert('✅ Campaign deleted successfully!');
+      } catch (err) {
+        console.error('Error deleting campaign:', err);
+        alert('❌ Error deleting campaign');
+      }
+    }
+  };
+
+  const budgetChartData = {
+    labels:  campaigns.map(c => c.title),
+    datasets: [
+      {
+        label: 'Campaign Budget ($)',
+        data: campaigns.map(c => c.budget),
+        backgroundColor: '#4ade80',
+        borderColor: '#22c55e',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const nicheData = campaigns.reduce((acc, campaign) => {
+    const niche = campaign.niche || 'Other';
+    acc[niche] = (acc[niche] || 0) + 1;
+    return acc;
+  }, {});
+
+  const nicheChartData = {
+    labels: Object.keys(nicheData),
+    datasets: [
+      {
+        label:  'Campaigns by Niche',
+        data:  Object.values(nicheData),
+        backgroundColor: [
+          '#4ade80',
+          '#22c55e',
+          '#16a34a',
+          '#15803d',
+          '#166534',
+          '#14532d'
+        ],
+        borderColor: '#1a1d2e',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins:  {
+      legend: {
+        labels: {
+          color: '#d1d5db',
+          font: { size: 12 }
+        }
+      },
+    },
+    scales: {
+      y: {
+        ticks: { color: '#9ca3af' },
+        grid: { color: '#334155' }
+      },
+      x: {
+        ticks: { color:  '#9ca3af' },
+        grid: { color: '#334155' }
+      }
     }
   };
 
@@ -286,262 +370,360 @@ const BrandDashboard = () => {
       </aside>
 
       <main className="main-content">
-        <header className="dashboard-header">
-          <div>
-            <h1>Welcome, {user?.name}!</h1>
-            <p className="subtitle">Find the perfect influencers for your brand</p>
-          </div>
-          <button className="btn-create" onClick={() => setShowCreateModal(true)}>
-            ➕ Create Campaign
-          </button>
-        </header>
-
-        {/* Discover Influencers Tab */}
         {activeTab === 'discover' && (
           <div className="discover-section">
-            {/* Filters */}
-            <div className="filters-panel">
-              <h3>🔍 Search & Filter</h3>
-
-              <div className="filter-group">
-                <label>Search Influencers</label>
-                <input
-                  type="text"
-                  placeholder="Search by name or username..."
-                  value={filters.search}
-                  onChange={(e) => setFilters({...filters, search: e.target.value})}
-                  className="search-input"
-
-                />
+            <div className="page-header">
+              <div>
+                <h1>Discover Influencers</h1>
+                <p className="page-subtitle">Find the perfect creators for your brand</p>
               </div>
-
-              <div className="filter-row">
-                <div className="filter-group">
-                  <label>Min Followers</label>
-                  <input
-                    type="number"
-                    value={filters.minFollowers}
-                    onChange={(e) => setFilters({...filters, minFollowers: e.target.value})}
-                  />
-
-                  />
-                </div>
-
-                <div className="filter-group">
-                  <label>Max Followers</label>
-                    value={filters.maxFollowers}
-                    onChange={(e) => setFilters({...filters, maxFollowers: e.target. value})}
-                  />
-
-                    value={filters.maxFollowers}
-                    onChange={(e) => setFilters({...filters, maxFollowers: e.target.value})}
-
-                  />
-                </div>
-              </div>
-
-              <div className="filter-group">
-                <label>Content Niches</label>
-                <div className="niche-pills">
-                  {niches. map(niche => (
-                    <button
-
-                      className={`niche-pill ${filters.selectedNiches.includes(niche) ? 'active' : ''}`}
-                      onClick={() => toggleNiche(niche)}
-                    >
-                      {niche}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="filter-group">
-                <label>Min Engagement Rate (%)</label>
-                <input
-                  type="number"
-                  placeholder="e.g.  5"
-                  value={filters.minEngagement}
-                  onChange={(e) => setFilters({...filters, minEngagement: e.target.value})}
-                  step="0.1"
-
-                />
-              </div>
-
-              <div className="filter-group">
-                <select value={filters.tier} onChange={(e) => setFilters({...filters, tier: e.target.value})}>
-                  {tiers.map(tier => (
-                    <option key={tier} value={tier}>
-                      {tier === 'all' ? 'All Tiers' : tier}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-                <label>Location</label>
-
-              <div className="filter-group">
-                <select value={filters.location} onChange={(e) => setFilters({...filters, location: e.target.value})}>
-                  {locations. map(loc => (
-                    <option key={loc} value={loc}>
-                      {loc === 'all' ? 'All Locations' : loc}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <button className="btn-reset" onClick={resetFilters}>
-                🔄 Reset Filters
-
-              }}>
-                🔄 Reset Filters
+              <button className="btn-create-pro" onClick={() => setShowCreateModal(true)}>
+                ➕ Create Campaign
               </button>
             </div>
 
-            {/* Results */}
-            <div className="results-section">
-              <div className="results-header">
-                <h3>Found {filteredInfluencers.length} Influencers</h3>
+            <div className="search-section">
+              <input
+                type="text"
+                placeholder="🔍 Search influencers by name or username..."
+                value={filters. search}
+                onChange={(e) => setFilters({...filters, search: e.target.value})}
+                className="search-input-pro"
+              />
+            </div>
+
+            <div className="filters-horizontal">
+              <div className="filter-group-inline">
+                <label>Min Followers</label>
+                <input
+                  type="number"
+                  placeholder="10,000"
+                  value={filters.minFollowers}
+                  onChange={(e) => setFilters({...filters, minFollowers: e.target.value})}
+                  className="filter-input-small"
+                />
               </div>
 
-              {loading ? (
-                <div className="loading">Loading influencers...</div>
-              ) : (
-                <div className="influencer-grid">
-                  {filteredInfluencers.map(influencer => (
-                    <div key={influencer._id} className="influencer-card">
-                      <div className="influencer-header">
-                        <img src={influencer.avatar} alt={influencer.name} className="influencer-avatar" />
-                        {influencer.verified && <div className="verified-badge">✓</div>}
+              <div className="filter-group-inline">
+                <label>Max Followers</label>
+                <input
+                  type="number"
+                  placeholder="100,000"
+                  value={filters.maxFollowers}
+                  onChange={(e) => setFilters({...filters, maxFollowers: e.target.value})}
+                  className="filter-input-small"
+                />
+              </div>
+
+              <div className="filter-group-inline">
+                <label>Min Engagement (%)</label>
+                <input
+                  type="number"
+                  placeholder="5. 0"
+                  value={filters.minEngagement}
+                  onChange={(e) => setFilters({...filters, minEngagement: e.target.value})}
+                  className="filter-input-small"
+                  step="0.1"
+                />
+              </div>
+
+              <button className="btn-reset-pro" onClick={resetFilters}>
+                🔄 Reset
+              </button>
+            </div>
+
+            <div className="niche-section">
+              <label className="filter-label">Content Niches: </label>
+              <div className="niche-pills-horizontal">
+                {niches.map(niche => (
+                  <button
+                    key={niche}
+                    className={`niche-pill-pro ${filters.selectedNiches. includes(niche) ? 'active' : ''}`}
+                    onClick={() => toggleNiche(niche)}
+                  >
+                    {niche}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="results-count">
+              <h3>Found {filteredInfluencers. length} Influencers</h3>
+            </div>
+
+            {loading ?  (
+              <div className="loading">Loading influencers...</div>
+            ) : (
+              <div className="influencer-grid-pro">
+                {filteredInfluencers.map(influencer => (
+                  <div key={influencer._id} className="influencer-card-pro">
+                    <div className="influencer-header">
+                      <img src={influencer.avatar} alt={influencer.name} className="influencer-avatar" />
+                      {influencer.verified && <div className="verified-badge">✓</div>}
+                    </div>
+
+                    <h4 className="influencer-name">{influencer.name}</h4>
+                    <p className="influencer-username">@{influencer.username}</p>
+
+                    <div className="tier-badge-pro" style={{ 
+                      background: `${getTierColor(influencer.tier)}20`, 
+                      color: getTierColor(influencer.tier),
+                      border: `1px solid ${getTierColor(influencer.tier)}`
+                    }}>
+                      {influencer.tier}
+                    </div>
+
+                    <div className="stats-row-pro">
+                      <div className="stat-pro">
+                        <span className="stat-value-pro">{formatNumber(influencer.followers)}</span>
+                        <span className="stat-label-pro">Followers</span>
                       </div>
-
-                      <h4>{influencer.name}</h4>
-                      <p className="username">@{influencer.username}</p>
-
-                      <div className="tier-badge" style={{ background: `${getTierColor(influencer.tier)}20`, color: getTierColor(influencer.tier) }}>
-                        {influencer.tier}
-                      </div>
-
-                      <div className="stats-row">
-                        <div className="stat">
-                          <span className="stat-value">{formatNumber(influencer. followers)}</span>
-                          <span className="stat-label">Followers</span>
-                        </div>
-                        <div className="stat">
-                          <span className="stat-value">{influencer.engagement}%</span>
-                          <span className="stat-label">Engagement</span>
-                        </div>
-                      </div>
-
-                      <div className="niches">
-                        {influencer.niche.slice(0, 3).map(n => (
-                          <span key={n} className="niche-tag">{n}</span>
-                        ))}
-                      </div>
-
-                      <div className="location">📍 {influencer.location}</div>
-
-                      <div className="price-range">
-                        ${influencer.priceRange.min} - ${influencer.priceRange.max}
-                      </div>
-
-                      <div className="card-actions">
-                        <button className="btn-view" onClick={() => handleViewProfile(influencer)}>View Profile</button>
-                        <button className="btn-contact" onClick={() => handleSendRequest(influencer)}>Send Request</button>
+                      <div className="stat-pro">
+                        <span className="stat-value-pro">{influencer.engagement}%</span>
+                        <span className="stat-label-pro">Engagement</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+
+                    <div className="niches-pro">
+                      {influencer.niche.slice(0, 3).map(n => (
+                        <span key={n} className="niche-tag-pro">{n}</span>
+                      ))}
+                    </div>
+
+                    <div className="location-pro">📍 {influencer.location}</div>
+
+                    <div className="price-range-pro">
+                      ${influencer.priceRange.min} - ${influencer.priceRange.max}
+                    </div>
+
+                    <div className="card-actions-pro">
+                      <button className="btn-view-pro" onClick={() => handleViewProfile(influencer)}>
+                        View Profile
+                      </button>
+                      <button className="btn-contact-pro" onClick={() => handleSendRequest(influencer)}>
+                        Send Request
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Campaigns Tab */}
         {activeTab === 'campaigns' && (
-          <div className="campaigns-section">
-            <h2>My Campaigns</h2>
-            <div className="campaigns-grid">
-              {campaigns.map(campaign => (
-                <div key={campaign._id} className="campaign-card">
-                  <h3>{campaign.title}</h3>
-                  <p>{campaign.description}</p>
-                  <div className="campaign-meta">
-                    <span>💰 ${campaign.budget}</span>
-                    <span>📅 {new Date(campaign.deadline).toLocaleDateString()}</span>
+          <div className="campaigns-section-pro">
+            <div className="page-header">
+              <div>
+                <h1>My Campaigns</h1>
+                <p className="page-subtitle">Manage your influencer campaigns</p>
+              </div>
+              <button className="btn-create-pro" onClick={() => setShowCreateModal(true)}>
+                ➕ Create Campaign
+              </button>
+            </div>
+
+            {campaigns.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">📢</div>
+                <h3>No campaigns yet</h3>
+                <p>Create your first campaign to start collaborating with influencers</p>
+                <button className="btn-create-pro" onClick={() => setShowCreateModal(true)}>
+                  Create Your First Campaign
+                </button>
+              </div>
+            ) : (
+              <div className="campaigns-grid-pro">
+                {campaigns.map(campaign => (
+                  <div key={campaign._id} className="campaign-card-pro">
+                    <div className="campaign-header-pro">
+                      <h3>{campaign.title}</h3>
+                      <div className="campaign-actions-pro">
+                        <button className="btn-edit-pro" title="Edit">✏️</button>
+                        <button 
+                          className="btn-delete-pro" 
+                          title="Delete"
+                          onClick={() => handleDeleteCampaign(campaign._id)}
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+
+                    <p className="campaign-description">{campaign.description}</p>
+
+                    <div className="campaign-meta-pro">
+                      <div className="meta-item">
+                        <span className="meta-icon">💰</span>
+                        <span className="meta-value">${campaign.budget}</span>
+                      </div>
+                      <div className="meta-item">
+                        <span className="meta-icon">📅</span>
+                        <span className="meta-value">
+                          {new Date(campaign.deadline).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {campaign.requirements && (
+                      <div className="campaign-requirements">
+                        <strong>Requirements:</strong>
+                        <p>{campaign.requirements}</p>
+                      </div>
+                    )}
+
+                    <div className="campaign-footer">
+                      <span className="campaign-date">
+                        Created {new Date(campaign.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'analytics' && (
+          <div className="analytics-section-pro">
+            <div className="page-header">
+              <div>
+                <h1>Campaign Analytics</h1>
+                <p className="page-subtitle">Track your campaign performance</p>
+              </div>
+            </div>
+
+            {campaigns.length === 0 ?  (
+              <div className="empty-state">
+                <div className="empty-icon">📊</div>
+                <h3>No analytics data yet</h3>
+                <p>Create campaigns to see analytics and insights</p>
+              </div>
+            ) : (
+              <>
+                <div className="stats-grid">
+                  <div className="stat-card-pro">
+                    <div className="stat-icon">📢</div>
+                    <div className="stat-content">
+                      <h3>{campaigns.length}</h3>
+                      <p>Total Campaigns</p>
+                    </div>
+                  </div>
+
+                  <div className="stat-card-pro">
+                    <div className="stat-icon">💰</div>
+                    <div className="stat-content">
+                      <h3>${campaigns.reduce((sum, c) => sum + Number(c.budget), 0).toLocaleString()}</h3>
+                      <p>Total Budget</p>
+                    </div>
+                  </div>
+
+                  <div className="stat-card-pro">
+                    <div className="stat-icon">👥</div>
+                    <div className="stat-content">
+                      <h3>{influencers.length}</h3>
+                      <p>Available Influencers</p>
+                    </div>
+                  </div>
+
+                  <div className="stat-card-pro">
+                    <div className="stat-icon">📈</div>
+                    <div className="stat-content">
+                      <h3>${(campaigns.reduce((sum, c) => sum + Number(c.budget), 0) / campaigns.length).toFixed(0)}</h3>
+                      <p>Avg Campaign Budget</p>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* Analytics Tab */}
-        {activeTab === 'analytics' && (
-          <div className="analytics-section">
-            <h2>Campaign Analytics</h2>
-            <p>Coming soon...</p>
+                <div className="charts-grid">
+                  <div className="chart-card">
+                    <h3>Campaign Budgets</h3>
+                    <div className="chart-container">
+                      <Bar data={budgetChartData} options={chartOptions} />
+                    </div>
+                  </div>
+
+                  <div className="chart-card">
+                    <h3>Campaigns by Niche</h3>
+                    <div className="chart-container">
+                      <Pie data={nicheChartData} options={{
+                        ... chartOptions,
+                        scales: undefined
+                      }} />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </main>
 
-      {/* Create Campaign Modal */}
       {showCreateModal && (
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+          <div className="modal-content-pro" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-pro">
               <h2>Create New Campaign</h2>
-              <button className="close-btn" onClick={() => setShowCreateModal(false)}>×</button>
+              <button className="close-btn-pro" onClick={() => setShowCreateModal(false)}>×</button>
             </div>
 
-            <form onSubmit={handleCreateCampaign}>
-              <div className="form-group">
-                <label>Campaign Title</label>
+            <form onSubmit={handleCreateCampaign} className="campaign-form">
+              <div className="form-group-pro">
+                <label>Campaign Title *</label>
                 <input
                   type="text"
                   required
+                  placeholder="e.g., Summer Fashion Collection 2025"
                   value={campaignForm.title}
                   onChange={(e) => setCampaignForm({...campaignForm, title: e.target. value})}
                 />
               </div>
 
-              <div className="form-group">
-                <label>Description</label>
+              <div className="form-group-pro">
+                <label>Description *</label>
                 <textarea
                   required
+                  placeholder="Describe your campaign goals and requirements..."
                   value={campaignForm.description}
-                  onChange={(e) => setCampaignForm({... campaignForm, description: e. target.value})}
+                  onChange={(e) => setCampaignForm({...campaignForm, description: e.target.value})}
+                  rows="4"
                 />
               </div>
 
-              <div className="form-group">
-                <label>Budget ($)</label>
-                <input
-                  type="number"
-                  required
-                  value={campaignForm.budget}
-                  onChange={(e) => setCampaignForm({...campaignForm, budget: e.target.value})}
-                />
+              <div className="form-row">
+                <div className="form-group-pro">
+                  <label>Budget ($) *</label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="5000"
+                    value={campaignForm.budget}
+                    onChange={(e) => setCampaignForm({...campaignForm, budget: e.target.value})}
+                  />
+                </div>
+
+                <div className="form-group-pro">
+                  <label>Deadline *</label>
+                  <input
+                    type="date"
+                    required
+                    value={campaignForm.deadline}
+                    onChange={(e) => setCampaignForm({...campaignForm, deadline: e.target.value})}
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label>Deadline</label>
-                <input
-                  type="date"
-                  required
-                  value={campaignForm.deadline}
-                  onChange={(e) => setCampaignForm({...campaignForm, deadline: e.target. value})}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Requirements</label>
+              <div className="form-group-pro">
+                <label>Additional Requirements</label>
                 <textarea
+                  placeholder="Any specific requirements for influencers..."
                   value={campaignForm.requirements}
                   onChange={(e) => setCampaignForm({...campaignForm, requirements: e.target.value})}
+                  rows="3"
                 />
               </div>
 
-              <button type="submit" className="btn-submit">Create Campaign</button>
+              <button type="submit" className="btn-submit-pro">Create Campaign</button>
             </form>
           </div>
         </div>
