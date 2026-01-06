@@ -41,13 +41,15 @@ const InfluencerDashboard = () => {
   });
 
   useEffect(() => {
-    if (! user || user.role !== 'Influencer') {
+    if (!user || user.role !== 'Influencer') {
       navigate('/login');
     } else {
       fetchCampaigns();
       fetchApplications();
+      fetchProfile();
     }
-  }, [user, navigate]);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [user, navigate]);
 
   const fetchCampaigns = async () => {
     setLoading(true);
@@ -66,13 +68,42 @@ const InfluencerDashboard = () => {
 
   const fetchApplications = async () => {
     try {
-      const token = localStorage. getItem('token');
+      const token = localStorage.getItem('token');
       const res = await axios.get('http://localhost:5001/api/applications/my-applications', {
         headers:  { 'x-auth-token': token }
       });
       setApplications(res.data);
     } catch (err) {
       console.error('Error fetching applications:', err);
+    }
+  };
+
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('http://localhost:5001/api/influencer-profile/me', {
+        headers: { 'x-auth-token': token }
+      });
+      
+      // Update profileData with fetched data
+      setProfileData({
+        name: res.data.user?.name || user?.name || '',
+        bio: res.data.bio || '',
+        location: res.data.location || '',
+        followers: res.data.followers || 0,
+        engagement: res.data.engagement || 0,
+        avgLikes: res.data.avgLikes || 0,
+        collabCostMin: res.data.collabCostMin || 0,
+        collabCostMax: res.data.collabCostMax || 0,
+        niches: res.data.niches || [],
+        ageRange: res.data.ageRange || '',
+        topCountries: res.data.topCountries || '',
+        genderFemale: res.data.genderFemale || 50,
+        genderMale: res.data.genderMale || 50
+      });
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      // If no profile exists yet, use default values (already set in state)
     }
   };
 
@@ -84,8 +115,8 @@ const InfluencerDashboard = () => {
   const handleApply = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage. getItem('token');
-      await axios.post(
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
         'http://localhost:5001/api/applications',
         {
           campaignId: selectedCampaign._id,
@@ -93,39 +124,74 @@ const InfluencerDashboard = () => {
         },
         { headers: { 'x-auth-token': token } }
       );
+      
+      console.log('Application submitted:', response.data);
       setShowApplyModal(false);
       setApplicationMessage('');
-      setSelectedCampaign(null);
-      fetchApplications();
       alert('✅ Application submitted successfully!');
+      fetchApplications();
     } catch (err) {
       console.error('Error applying:', err);
-      alert('❌ Error submitting application');
+      const errorMsg = err.response?.data?.msg || 'Error submitting application';
+      alert(`❌ ${errorMsg}`);
     }
   };
 
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
-    // TODO: Save to backend when profile model is ready
-    setShowEditModal(false);
-    alert('✅ Profile updated successfully!');
+    
+    console.log('Saving profile data:', profileData); // Debug log
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.post(
+        'http://localhost:5001/api/influencer-profile',
+        {
+          bio: profileData.bio || '',
+          location: profileData.location || '',
+          followers: parseInt(profileData.followers) || 0,
+          engagement: parseFloat(profileData.engagement) || 0,
+          avgLikes:  parseInt(profileData.avgLikes) || 0,
+          collabCostMin: parseInt(profileData.collabCostMin) || 0,
+          collabCostMax:  parseInt(profileData.collabCostMax) || 0,
+          niches: profileData.niches || [],
+          ageRange: profileData.ageRange || '',
+          topCountries: profileData.topCountries || '',
+          genderFemale: parseInt(profileData.genderFemale) || 50,
+          genderMale:  parseInt(profileData.genderMale) || 50
+        },
+        { 
+          headers: { 'x-auth-token': token },
+          timeout: 10000 // 10 second timeout
+        }
+      );
+      
+      console.log('Profile saved successfully:', response.data);
+      setShowEditModal(false);
+      alert('✅ Profile saved successfully!');
+      fetchProfile(); // Reload profile data
+    } catch (err) {
+      console.error('Error saving profile:', err.response?.data || err.message);
+      alert(`❌ Error saving profile: ${err.response?.data?.msg || err.message}`);
+    }
   };
 
   const toggleNiche = (niche) => {
     setProfileData(prev => ({
       ...prev,
-      niches: prev.niches. includes(niche)
+      niches: prev.niches.includes(niche)
         ? prev.niches.filter(n => n !== niche)
         : [...prev.niches, niche]
     }));
   };
 
-  const filteredCampaigns = campaigns. filter(campaign => {
-    if (filters.search && !campaign. title.toLowerCase().includes(filters.search.toLowerCase())) {
+  const filteredCampaigns = campaigns.filter(campaign => {
+    if (filters.search && !campaign.title.toLowerCase().includes(filters.search.toLowerCase())) {
       return false;
     }
     if (filters.minBudget && campaign.budget < parseInt(filters.minBudget)) return false;
-    if (filters. maxBudget && campaign.budget > parseInt(filters.maxBudget)) return false;
+    if (filters.maxBudget && campaign.budget > parseInt(filters.maxBudget)) return false;
     return true;
   }).sort((a, b) => {
     if (filters.sortBy === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
@@ -221,7 +287,7 @@ const InfluencerDashboard = () => {
                 <input
                   type="number"
                   placeholder="500"
-                  value={filters. minBudget}
+                  value={filters.minBudget}
                   onChange={(e) => setFilters({ ...filters, minBudget: e.target.value })}
                   className="filter-input-small"
                 />
@@ -303,7 +369,7 @@ const InfluencerDashboard = () => {
                     {campaign.requirements && (
                       <div className="campaign-requirements-inf">
                         <strong>Requirements:</strong>
-                        <p>{campaign. requirements}</p>
+                        <p>{campaign.requirements}</p>
                       </div>
                     )}
 
@@ -404,7 +470,7 @@ const InfluencerDashboard = () => {
                     {app.message && (
                       <div className="app-message">
                         <strong>Your Message:</strong>
-                        <p>{app. message}</p>
+                        <p>{app.message}</p>
                       </div>
                     )}
                   </div>
@@ -429,7 +495,7 @@ const InfluencerDashboard = () => {
 
             <div className="profile-card-main">
               <div className="profile-avatar-large">
-                {user && user.name ? user.name[0]. toUpperCase() : 'I'}
+                {user && user.name ? user.name[0].toUpperCase() : 'I'}
               </div>
               <h2>{profileData.name}</h2>
               <p className="profile-email">{user?.email}</p>
@@ -438,7 +504,7 @@ const InfluencerDashboard = () => {
                 {user?.role}
               </div>
               {profileData.bio && (
-                <p className="profile-bio">{profileData. bio}</p>
+                <p className="profile-bio">{profileData.bio}</p>
               )}
             </div>
 
@@ -463,7 +529,7 @@ const InfluencerDashboard = () => {
                 <div className="stat-icon">❤️</div>
                 <div className="stat-content">
                   <h3>{profileData.avgLikes >= 1000 ? `${(profileData.avgLikes / 1000).toFixed(1)}K` : profileData.avgLikes}</h3>
-                  <p>Avg.  Likes</p>
+                  <p>Avg. Likes</p>
                 </div>
               </div>
 
@@ -537,7 +603,7 @@ const InfluencerDashboard = () => {
                 <label>Campaign</label>
                 <input
                   type="text"
-                  value={selectedCampaign?. title}
+                  value={selectedCampaign?.title}
                   disabled
                   style={{ background: '#151B23', cursor: 'not-allowed' }}
                 />
@@ -549,7 +615,7 @@ const InfluencerDashboard = () => {
                   required
                   placeholder="Tell the brand why you're a great fit for this campaign..."
                   value={applicationMessage}
-                  onChange={(e) => setApplicationMessage(e. target.value)}
+                  onChange={(e) => setApplicationMessage(e.target.value)}
                   rows="6"
                 />
               </div>
@@ -578,7 +644,7 @@ const InfluencerDashboard = () => {
                   type="text"
                   required
                   value={profileData.name}
-                  onChange={(e) => setProfileData({ ...profileData, name: e. target.value })}
+                  onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                 />
               </div>
 
@@ -611,7 +677,7 @@ const InfluencerDashboard = () => {
                     type="number"
                     required
                     value={profileData.followers}
-                    onChange={(e) => setProfileData({ ... profileData, followers: parseInt(e.target.value) })}
+                    onChange={(e) => setProfileData({ ...profileData, followers: parseInt(e.target.value) })}
                   />
                 </div>
 
@@ -622,7 +688,7 @@ const InfluencerDashboard = () => {
                     required
                     step="0.1"
                     value={profileData.engagement}
-                    onChange={(e) => setProfileData({ ...profileData, engagement: parseFloat(e.target. value) })}
+                    onChange={(e) => setProfileData({ ...profileData, engagement: parseFloat(e.target.value) })}
                   />
                 </div>
               </div>
@@ -634,7 +700,7 @@ const InfluencerDashboard = () => {
                     type="number"
                     required
                     value={profileData.avgLikes}
-                    onChange={(e) => setProfileData({ ... profileData, avgLikes: parseInt(e.target.value) })}
+                    onChange={(e) => setProfileData({ ...profileData, avgLikes: parseInt(e.target.value) })}
                   />
                 </div>
               </div>
@@ -657,8 +723,8 @@ const InfluencerDashboard = () => {
                   <input
                     type="number"
                     required
-                    value={profileData. collabCostMax}
-                    onChange={(e) => setProfileData({ ...profileData, collabCostMax: parseInt(e. target.value) })}
+                    value={profileData.collabCostMax}
+                    onChange={(e) => setProfileData({ ...profileData, collabCostMax: parseInt(e.target.value) })}
                   />
                 </div>
               </div>
@@ -684,8 +750,8 @@ const InfluencerDashboard = () => {
                 <label>Age Range</label>
                 <input
                   type="text"
-                  value={profileData. ageRange}
-                  onChange={(e) => setProfileData({ ... profileData, ageRange: e.target.value })}
+                  value={profileData.ageRange}
+                  onChange={(e) => setProfileData({ ...profileData, ageRange: e.target.value })}
                   placeholder="e.g., 18-34"
                 />
               </div>

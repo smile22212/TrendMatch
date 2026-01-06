@@ -43,7 +43,7 @@ const BrandDashboard = () => {
   });
 
   const [campaignForm, setCampaignForm] = useState({
-    title: '',
+    title:  '',
     description: '',
     budget: '',
     deadline: '',
@@ -64,7 +64,7 @@ const BrandDashboard = () => {
   const fetchCampaigns = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5001/api/campaigns/my-campaigns', {
+      const res = await axios. get('http://localhost:5001/api/campaigns/my-campaigns', {
         headers:  { 'x-auth-token': token }
       });
       setCampaigns(res.data);
@@ -76,90 +76,14 @@ const BrandDashboard = () => {
   const fetchInfluencers = async () => {
     setLoading(true);
     try {
-      const mockInfluencers = [
-        {
-          _id: '1',
-          username: 'fashioninfluencer',
-          name: 'Fashion Influencer',
-          avatar: 'https://i.pravatar.cc/150?img=47',
-          followers: 50000,
-          engagement: 8.5,
-          niche: ['Fashion', 'Lifestyle', 'Beauty'],
-          location: 'United States',
-          verified: true,
-          tier: 'Mid-tier',
-          priceRange: { min: 432, max: 649 }
-        },
-        {
-          _id: '2',
-          username: 'beautyguru',
-          name: 'Beauty Guru',
-          avatar:  'https://i.pravatar.cc/150?img=32',
-          followers: 125000,
-          engagement: 12.3,
-          niche: ['Beauty', 'Makeup', 'Skincare'],
-          location: 'United Kingdom',
-          verified: true,
-          tier: 'Macro',
-          priceRange: { min: 1250, max: 1875 }
-        },
-        {
-          _id: '3',
-          username: 'lifestyleblogger',
-          name: 'Lifestyle Blogger',
-          avatar: 'https://i.pravatar.cc/150?img=28',
-          followers: 35000,
-          engagement: 6.8,
-          niche: ['Lifestyle', 'Travel', 'Wellness'],
-          location: 'Canada',
-          verified: false,
-          tier: 'Micro',
-          priceRange:  { min: 280, max: 420 }
-        },
-        {
-          _id: '4',
-          username: 'techreview',
-          name: 'Tech Review Pro',
-          avatar: 'https://i.pravatar.cc/150?img=15',
-          followers: 89000,
-          engagement: 9.2,
-          niche: ['Tech', 'Gaming', 'Lifestyle'],
-          location: 'United States',
-          verified: true,
-          tier: 'Mid-tier',
-          priceRange: { min: 890, max: 1335 }
-        },
-        {
-          _id: '5',
-          username: 'foodieparadise',
-          name: 'Foodie Paradise',
-          avatar:  'https://i.pravatar.cc/150?img=45',
-          followers: 67000,
-          engagement: 11.5,
-          niche: ['Food', 'Travel', 'Lifestyle'],
-          location:  'Australia',
-          verified: true,
-          tier: 'Mid-tier',
-          priceRange: { min: 720, max: 1080 }
-        },
-        {
-          _id: '6',
-          username: 'fitnessmotivation',
-          name: 'Fitness Motivation',
-          avatar: 'https://i.pravatar.cc/150?img=60',
-          followers: 45000,
-          engagement: 7.8,
-          niche: ['Fitness', 'Wellness', 'Lifestyle'],
-          location: 'Germany',
-          verified: false,
-          tier: 'Micro',
-          priceRange:  { min: 380, max: 570 }
-        }
-      ];
-      
-      setInfluencers(mockInfluencers);
+      const token = localStorage. getItem('token');
+      const res = await axios.get('http://localhost:5001/api/influencer-profile/all', {
+        headers: { 'x-auth-token': token }
+      });
+      setInfluencers(res.data);
     } catch (err) {
       console.error('Error fetching influencers:', err);
+      setInfluencers([]);
     } finally {
       setLoading(false);
     }
@@ -189,16 +113,22 @@ const BrandDashboard = () => {
     });
   };
 
-  const filteredInfluencers = influencers. filter(influencer => {
-    if (filters.search && ! influencer.name.toLowerCase().includes(filters.search.toLowerCase()) && 
-        !influencer.username.toLowerCase().includes(filters.search.toLowerCase())) {
-      return false;
+  const filteredInfluencers = influencers.filter(influencer => {
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      const name = influencer.user?. name?.toLowerCase() || '';
+      const email = influencer.user?.email?. toLowerCase() || '';
+      if (! name.includes(searchLower) && !email.includes(searchLower)) {
+        return false;
+      }
     }
-    if (filters.minFollowers && influencer.followers < parseInt(filters. minFollowers)) return false;
+    if (filters.minFollowers && influencer.followers < parseInt(filters.minFollowers)) return false;
     if (filters. maxFollowers && influencer.followers > parseInt(filters.maxFollowers)) return false;
-    if (filters.minEngagement && influencer.engagement < parseFloat(filters. minEngagement)) return false;
+    if (filters.minEngagement && influencer.engagement < parseFloat(filters.minEngagement)) return false;
     if (filters.selectedNiches.length > 0) {
-      const hasMatchingNiche = filters.selectedNiches.some(niche => influencer.niche.includes(niche));
+      const hasMatchingNiche = filters.selectedNiches.some(niche => 
+        influencer.niches?. includes(niche)
+      );
       if (!hasMatchingNiche) return false;
     }
     return true;
@@ -214,15 +144,26 @@ const BrandDashboard = () => {
     const colors = {
       'Nano': '#9CA3AF',
       'Micro': '#60A5FA',
-      'Mid-tier': '#4ade80',
-      'Macro':  '#F59E0B',
+      'Mid-tier': '#00D084',
+      'Macro': '#F59E0B',
       'Mega': '#EF4444'
     };
     return colors[tier] || '#9CA3AF';
   };
 
   const handleViewProfile = (influencer) => {
-    alert(`👤 ${influencer.name}\n\nUsername: @${influencer.username}\nFollowers: ${formatNumber(influencer.followers)}\nEngagement: ${influencer.engagement}%\nLocation: ${influencer.location}\nPrice:  $${influencer.priceRange.min} - $${influencer.priceRange.max}`);
+    const profileInfo = `
+👤 ${influencer.user?. name || 'Influencer'}
+
+📧 Email: ${influencer.user?.email}
+👥 Followers: ${formatNumber(influencer.followers)}
+💚 Engagement: ${influencer.engagement}%
+📍 Location: ${influencer. location || 'Not specified'}
+💰 Price Range: $${influencer.collabCostMin} - $${influencer.collabCostMax}
+🏆 Tier: ${influencer.tier}
+🎯 Niches: ${influencer.niches?.join(', ') || 'Not specified'}
+    `.trim();
+    alert(profileInfo);
   };
 
   const handleSendRequest = (influencer) => {
@@ -231,7 +172,7 @@ const BrandDashboard = () => {
       setShowCreateModal(true);
       return;
     }
-    alert(`✅ Sending request to ${influencer.name}!`);
+    alert(`✅ Sending collaboration request to ${influencer.user?. name}! `);
   };
 
   const handleCreateCampaign = async (e) => {
@@ -268,13 +209,13 @@ const BrandDashboard = () => {
   };
 
   const budgetChartData = {
-    labels:  campaigns.map(c => c.title),
+    labels: campaigns.map(c => c.title),
     datasets: [
       {
         label: 'Campaign Budget ($)',
         data: campaigns.map(c => c.budget),
-        backgroundColor: '#4ade80',
-        borderColor: '#22c55e',
+        backgroundColor: '#00D084',
+        borderColor:  '#00B570',
         borderWidth: 2,
       },
     ],
@@ -291,16 +232,16 @@ const BrandDashboard = () => {
     datasets: [
       {
         label:  'Campaigns by Niche',
-        data:  Object.values(nicheData),
+        data: Object.values(nicheData),
         backgroundColor: [
-          '#4ade80',
-          '#22c55e',
-          '#16a34a',
-          '#15803d',
-          '#166534',
-          '#14532d'
+          '#00D084',
+          '#00B570',
+          '#009959',
+          '#008040',
+          '#006633',
+          '#005028'
         ],
-        borderColor: '#1a1d2e',
+        borderColor:  '#151B23',
         borderWidth: 2,
       },
     ],
@@ -309,22 +250,22 @@ const BrandDashboard = () => {
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins:  {
+    plugins: {
       legend: {
         labels: {
-          color: '#d1d5db',
+          color: '#E4E7EB',
           font: { size: 12 }
         }
       },
     },
     scales: {
       y: {
-        ticks: { color: '#9ca3af' },
-        grid: { color: '#334155' }
+        ticks: { color: '#9AA5B1' },
+        grid: { color: 'rgba(255, 255, 255, 0.08)' }
       },
       x: {
-        ticks: { color:  '#9ca3af' },
-        grid: { color: '#334155' }
+        ticks: { color:  '#9AA5B1' },
+        grid: { color: 'rgba(255, 255, 255, 0.08)' }
       }
     }
   };
@@ -385,9 +326,9 @@ const BrandDashboard = () => {
             <div className="search-section">
               <input
                 type="text"
-                placeholder="🔍 Search influencers by name or username..."
-                value={filters. search}
-                onChange={(e) => setFilters({...filters, search: e.target.value})}
+                placeholder="🔍 Search influencers by name or email..."
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 className="search-input-pro"
               />
             </div>
@@ -399,7 +340,7 @@ const BrandDashboard = () => {
                   type="number"
                   placeholder="10,000"
                   value={filters.minFollowers}
-                  onChange={(e) => setFilters({...filters, minFollowers: e.target.value})}
+                  onChange={(e) => setFilters({ ...filters, minFollowers: e.target.value })}
                   className="filter-input-small"
                 />
               </div>
@@ -410,7 +351,7 @@ const BrandDashboard = () => {
                   type="number"
                   placeholder="100,000"
                   value={filters.maxFollowers}
-                  onChange={(e) => setFilters({...filters, maxFollowers: e.target.value})}
+                  onChange={(e) => setFilters({ ...filters, maxFollowers: e.target.value })}
                   className="filter-input-small"
                 />
               </div>
@@ -419,9 +360,9 @@ const BrandDashboard = () => {
                 <label>Min Engagement (%)</label>
                 <input
                   type="number"
-                  placeholder="5. 0"
+                  placeholder="5.0"
                   value={filters.minEngagement}
-                  onChange={(e) => setFilters({...filters, minEngagement: e.target.value})}
+                  onChange={(e) => setFilters({ ...filters, minEngagement: e.target.value })}
                   className="filter-input-small"
                   step="0.1"
                 />
@@ -435,10 +376,10 @@ const BrandDashboard = () => {
             <div className="niche-section">
               <label className="filter-label">Content Niches: </label>
               <div className="niche-pills-horizontal">
-                {niches.map(niche => (
+                {niches. map(niche => (
                   <button
                     key={niche}
-                    className={`niche-pill-pro ${filters.selectedNiches. includes(niche) ? 'active' : ''}`}
+                    className={`niche-pill-pro ${filters.selectedNiches.includes(niche) ? 'active' : ''}`}
                     onClick={() => toggleNiche(niche)}
                   >
                     {niche}
@@ -448,25 +389,32 @@ const BrandDashboard = () => {
             </div>
 
             <div className="results-count">
-              <h3>Found {filteredInfluencers. length} Influencers</h3>
+              <h3>Found {filteredInfluencers.length} Influencers</h3>
             </div>
 
-            {loading ?  (
+            {loading ? (
               <div className="loading">Loading influencers...</div>
+            ) : filteredInfluencers.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">🔍</div>
+                <h3>No influencers found</h3>
+                <p>Try adjusting your filters or ask influencers to complete their profiles</p>
+              </div>
             ) : (
               <div className="influencer-grid-pro">
                 {filteredInfluencers.map(influencer => (
                   <div key={influencer._id} className="influencer-card-pro">
                     <div className="influencer-header">
-                      <img src={influencer.avatar} alt={influencer.name} className="influencer-avatar" />
-                      {influencer.verified && <div className="verified-badge">✓</div>}
+                      <div className="influencer-avatar-pro">
+                        {influencer.user?.name?.[0]?.toUpperCase() || 'I'}
+                      </div>
                     </div>
 
-                    <h4 className="influencer-name">{influencer.name}</h4>
-                    <p className="influencer-username">@{influencer.username}</p>
+                    <h4 className="influencer-name">{influencer.user?.name || 'Influencer'}</h4>
+                    <p className="influencer-username">{influencer.user?.email}</p>
 
-                    <div className="tier-badge-pro" style={{ 
-                      background: `${getTierColor(influencer.tier)}20`, 
+                    <div className="tier-badge-pro" style={{
+                      background: `${getTierColor(influencer.tier)}20`,
                       color: getTierColor(influencer.tier),
                       border: `1px solid ${getTierColor(influencer.tier)}`
                     }}>
@@ -485,15 +433,20 @@ const BrandDashboard = () => {
                     </div>
 
                     <div className="niches-pro">
-                      {influencer.niche.slice(0, 3).map(n => (
+                      {influencer.niches?.slice(0, 3).map(n => (
                         <span key={n} className="niche-tag-pro">{n}</span>
                       ))}
+                      {influencer.niches?. length > 3 && (
+                        <span className="niche-tag-pro">+{influencer.niches. length - 3}</span>
+                      )}
                     </div>
 
-                    <div className="location-pro">📍 {influencer.location}</div>
+                    {influencer.location && (
+                      <div className="location-pro">📍 {influencer.location}</div>
+                    )}
 
                     <div className="price-range-pro">
-                      ${influencer.priceRange.min} - ${influencer.priceRange.max}
+                      ${influencer.collabCostMin} - ${influencer.collabCostMax}
                     </div>
 
                     <div className="card-actions-pro">
@@ -540,8 +493,8 @@ const BrandDashboard = () => {
                       <h3>{campaign.title}</h3>
                       <div className="campaign-actions-pro">
                         <button className="btn-edit-pro" title="Edit">✏️</button>
-                        <button 
-                          className="btn-delete-pro" 
+                        <button
+                          className="btn-delete-pro"
                           title="Delete"
                           onClick={() => handleDeleteCampaign(campaign._id)}
                         >
@@ -593,7 +546,7 @@ const BrandDashboard = () => {
               </div>
             </div>
 
-            {campaigns.length === 0 ?  (
+            {campaigns.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">📊</div>
                 <h3>No analytics data yet</h3>
@@ -675,7 +628,7 @@ const BrandDashboard = () => {
                   required
                   placeholder="e.g., Summer Fashion Collection 2025"
                   value={campaignForm.title}
-                  onChange={(e) => setCampaignForm({...campaignForm, title: e.target. value})}
+                  onChange={(e) => setCampaignForm({ ...campaignForm, title: e.target.value })}
                 />
               </div>
 
@@ -685,7 +638,7 @@ const BrandDashboard = () => {
                   required
                   placeholder="Describe your campaign goals and requirements..."
                   value={campaignForm.description}
-                  onChange={(e) => setCampaignForm({...campaignForm, description: e.target.value})}
+                  onChange={(e) => setCampaignForm({ ...campaignForm, description: e.target.value })}
                   rows="4"
                 />
               </div>
@@ -698,7 +651,7 @@ const BrandDashboard = () => {
                     required
                     placeholder="5000"
                     value={campaignForm.budget}
-                    onChange={(e) => setCampaignForm({...campaignForm, budget: e.target.value})}
+                    onChange={(e) => setCampaignForm({ ...campaignForm, budget: e.target.value })}
                   />
                 </div>
 
@@ -708,7 +661,7 @@ const BrandDashboard = () => {
                     type="date"
                     required
                     value={campaignForm.deadline}
-                    onChange={(e) => setCampaignForm({...campaignForm, deadline: e.target.value})}
+                    onChange={(e) => setCampaignForm({ ...campaignForm, deadline: e.target.value })}
                   />
                 </div>
               </div>
@@ -718,7 +671,7 @@ const BrandDashboard = () => {
                 <textarea
                   placeholder="Any specific requirements for influencers..."
                   value={campaignForm.requirements}
-                  onChange={(e) => setCampaignForm({...campaignForm, requirements: e.target.value})}
+                  onChange={(e) => setCampaignForm({ ...campaignForm, requirements: e.target.value })}
                   rows="3"
                 />
               </div>

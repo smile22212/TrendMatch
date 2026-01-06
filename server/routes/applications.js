@@ -1,113 +1,84 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 const Application = require('../models/Application');
 const Campaign = require('../models/Campaign');
-const auth = require('../middleware/auth');
 
 // @route   POST /api/applications
-// @desc    Create a new application
+// @desc    Apply to a campaign
 // @access  Private (Influencer only)
 router.post('/', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'Influencer') {
-      return res.status(403).json({ msg: 'Only influencers can apply to campaigns' });
+    console.log('📥 Application received:', req.body);
+    console.log('👤 User ID:', req.user. id);
+
+    const { campaignId, message } = req.body;
+
+    if (!campaignId) {
+      console.error('❌ No campaignId provided');
+      return res.status(400).json({ msg: 'Campaign ID is required' });
     }
 
-    const { campaign, message } = req.body;
+    if (!message) {
+      console.error('❌ No message provided');
+      return res.status(400).json({ msg: 'Message is required' });
+    }
 
     // Check if campaign exists
-    const campaignExists = await Campaign.findById(campaign);
-    if (!campaignExists) {
+    const campaign = await Campaign.findById(campaignId);
+    if (!campaign) {
+      console.error('❌ Campaign not found');
       return res.status(404).json({ msg: 'Campaign not found' });
     }
 
+    console.log('✅ Campaign found:', campaign. title);
+
     // Check if already applied
-    const existingApplication = await Application.findOne({
-      campaign,
+    const existingApp = await Application.findOne({
+      campaign: campaignId,
       influencer: req.user.id
     });
 
-    if (existingApplication) {
+    if (existingApp) {
+      console.error('❌ Already applied');
       return res.status(400).json({ msg: 'You have already applied to this campaign' });
     }
 
     const application = new Application({
-      campaign,
-      influencer: req. user.id,
+      campaign: campaignId,
+      influencer:  req.user.id,
       message
     });
 
     await application.save();
-
+    
+    console.log('✅ Application saved successfully:', application._id);
     res.json(application);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error('💥 ERROR submitting application:', err);
+    res.status(500).json({ msg: 'Server error', error:  err.message });
   }
 });
 
-// @route   GET /api/applications
-// @desc    Get applications (for influencer:  their applications, for brand: applications to their campaigns)
-// @access  Private
-router.get('/', auth, async (req, res) => {
+// @route   GET /api/applications/my-applications
+// @desc    Get influencer's applications
+// @access  Private (Influencer)
+router.get('/my-applications', auth, async (req, res) => {
   try {
-    let applications;
+    console.log('📥 Fetching applications for user:', req.user.id);
 
-    if (req.user.role === 'Influencer') {
-      applications = await Application.find({ influencer: req.user.id })
-        .populate({
-          path: 'campaign',
-          populate: {
-            path: 'brand',
-            select: 'name email'
-          }
-        })
-        .sort({ createdAt: -1 });
-    } else if (req.user.role === 'Brand') {
-      const campaigns = await Campaign.find({ brand: req.user.id });
-      const campaignIds = campaigns.map(c => c._id);
-      
-      applications = await Application.find({ campaign: { $in: campaignIds } })
-        .populate('influencer', 'name email')
-        .populate('campaign', 'title budget deadline')
-        .sort({ createdAt: -1 });
-    }
+    const applications = await Application.find({ influencer: req.user.id })
+      .populate('campaign')
+      .populate({
+        path: 'campaign',
+        populate: { path: 'brand', select: 'name email' }
+      })
+      .sort({ appliedAt: -1 });
 
+    console.log(`✅ Found ${applications.length} applications`);
     res.json(applications);
   } catch (err) {
-    console.error(err. message);
-    res.status(500).send('Server error');
-  }
-});
-
-// @route   PUT /api/applications/:id
-// @desc    Update application status
-// @access  Private (Brand only)
-router.put('/:id', auth, async (req, res) => {
-  try {
-    if (req.user. role !== 'Brand') {
-      return res.status(403).json({ msg: 'Only brands can update application status' });
-    }
-
-    const { status } = req.body;
-
-    const application = await Application.findById(req.params.id).populate('campaign');
-
-    if (!application) {
-      return res.status(404).json({ msg: 'Application not found' });
-    }
-
-    // Check if brand owns the campaign
-    if (application.campaign.brand.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'User not authorized' });
-    }
-
-    application.status = status;
-    await application.save();
-
-    res.json(application);
-  } catch (err) {
-    console.error(err.message);
+    console.error('💥 ERROR fetching applications:', err);
     res.status(500).send('Server error');
   }
 });
