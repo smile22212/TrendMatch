@@ -1,15 +1,15 @@
 :root {
-  --bg-dark: #0a0f1e;
-  --bg-card: #1a1d2e;
-  --bg-card-hover: #252936;
-  --border-default: #2d3548;
-  --border-hover: #4ade80;
-  --text-primary: #ffffff;
-  --text-secondary:  #d1d5db;
-  --text-muted: #9ca3af;
-  --green-primary: #4ade80;
-  --green-hover: #22c55e;
-  --green-dark: #16a34a;
+  --bg-dark: #0A0E14;
+  --bg-card: #151B23;
+  --bg-card-hover:  #1f252e;
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-hover: #00D084;
+  --text-primary: #E4E7EB;
+  --text-secondary:  #9AA5B1;
+  --text-muted: #616E7C;
+  --green-primary: #00D084;
+  --green-hover:  #00B570;
+  --green-dark: #009959;
 }
 
 . brand-dashboard {
