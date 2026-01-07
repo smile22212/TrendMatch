@@ -960,3 +960,166 @@ select. filter-input-small {
     font-size:  0.85rem;
   }
 }
+
+/* ============================================
+   MOBILE RESPONSIVE - INFLUENCER DASHBOARD
+   ============================================ */
+
+   @media (max-width: 768px) {
+    .influencer-dashboard {
+      flex-direction: column ! important;
+      padding: 0 !important;
+    }
+  
+    .sidebar {
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      position: relative !important;
+      height: auto !important;
+      border-right: none !important;
+      border-bottom: 1px solid #2a2f3e;
+    }
+  
+    .logo {
+      font-size: 1.2rem !important;
+      padding: 15px !important;
+    }
+  
+    .menu-item {
+      padding: 12px 20px !important;
+      font-size: 0.9rem !important;
+    }
+  
+    .main-content {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 15px !important;
+      margin-left: 0 !important;
+    }
+  
+    .page-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 15px !important;
+      margin-bottom: 20px !important;
+    }
+  
+    .page-header h1 {
+      font-size: 1.5rem !important;
+    }
+  
+    /* Browse Section */
+    .browse-section {
+      padding: 15px !important;
+    }
+  
+    .search-section {
+      padding: 15px !important;
+    }
+  
+    .search-section input {
+      font-size: 16px !important;
+      padding:  12px !important;
+    }
+  
+    .filters-horizontal {
+      flex-direction: column !important;
+      gap: 10px !important;
+    }
+  
+    .filter-group {
+      width: 100% !important;
+    }
+  
+    .filter-group input,
+    .filter-group select {
+      width: 100% !important;
+      font-size: 16px !important;
+    }
+  
+    .results-count {
+      font-size: 0.9rem !important;
+      text-align: center !important;
+      margin:  15px 0 !important;
+    }
+  
+    /* Campaign Grid */
+    .campaigns-grid-pro {
+      grid-template-columns: 1fr !important;
+      gap: 15px !important;
+      padding: 0 !important;
+    }
+  
+    .campaign-card-pro {
+      padding: 15px !important;
+    }
+  
+    .campaign-card-pro h3 {
+      font-size: 1.1rem !important;
+    }
+  
+    .campaign-card-pro p {
+      font-size: 0.85rem !important;
+    }
+  
+    . campaign-card-pro button {
+      width: 100% !important;
+      padding: 12px !important;
+    }
+  
+    /* Profile Section */
+    .profile-section {
+      padding: 15px ! important;
+    }
+  
+    . profile-form {
+      padding: 15px !important;
+    }
+  
+    .form-row {
+      flex-direction: column !important;
+    }
+  
+    .form-group {
+      width: 100% !important;
+      margin-bottom: 15px !important;
+    }
+  
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100% ! important;
+      font-size:  16px !important;
+    }
+  
+    /* Applications */
+    .applications-list {
+      padding: 0 !important;
+    }
+  
+    .application-item {
+      padding: 15px !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+  
+    .application-details {
+      width: 100% !important;
+      margin-bottom: 10px !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.3rem !important;
+    }
+  
+    .campaign-card-pro {
+      padding: 12px !important;
+    }
+  
+    .menu-item {
+      padding: 10px 15px !important;
+    }
+  }
