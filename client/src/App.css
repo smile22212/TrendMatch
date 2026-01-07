@@ -249,3 +249,56 @@ body {
     padding: 20px !important;
   }
 }
+
+/* ============================================
+   PROFESSIONAL MOBILE POLISH - GLOBAL
+   ============================================ */
+
+@media (max-width: 768px) {
+  
+  /* Smooth Scrolling */
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Professional Typography */
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.3 !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Better Button Styling */
+  button {
+    min-height: 44px !important; /* iOS tap target */
+    transition: all 0.3s ease !important;
+  }
+
+  button:active {
+    transform: scale(0.98) !important;
+  }
+
+  /* Better Input Focus */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline:  2px solid #00D084 !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Professional Cards */
+  .card,
+  [class*="card"] {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    transition: transform 0.3s ease !important;
+  }
+
+  /* Safe Area for iPhone notch */
+  .sidebar {
+    padding-top: env(safe-area-inset-top) !important;
+  }
+
+  . main-content {
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+}

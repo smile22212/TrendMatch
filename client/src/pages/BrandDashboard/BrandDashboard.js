@@ -299,6 +299,42 @@ const BrandDashboard = () => {
     }
   };
 
+  const exportToCSV = () => {
+    try {
+      const csvData = [
+        ['TrendMatch Analytics Report'],
+        ['Generated:', new Date().toLocaleString()],
+        [''],
+        ['Metric', 'Value'],
+        ['Total Campaigns', campaigns. length],
+        ['Total Budget', '$' + campaigns.reduce((sum, c) => sum + Number(c.budget), 0)],
+        ['Active Campaigns', campaigns. filter(c => new Date(c.deadline) > new Date()).length],
+        [''],
+        ['Campaign Details'],
+        ['Name', 'Budget', 'Deadline', 'Status'],
+        ... campaigns.map(c => [
+          c.title,
+          '$' + c.budget,
+          new Date(c.deadline).toLocaleDateString(),
+          new Date(c.deadline) > new Date() ? 'Active' : 'Expired'
+        ])
+      ];
+      const csvContent = csvData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const link = document. createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'TrendMatch_Analytics. csv';
+      link.click();
+      alert('✅ CSV exported! ');
+    } catch (err) {
+      alert('❌ Export failed');
+    }
+  };
+
+  const exportToPDF = () => {
+    window.print();
+  };
+
   const budgetChartData = {
     labels: campaigns.map(c => c.title),
     datasets: [
@@ -428,6 +464,10 @@ const BrandDashboard = () => {
               <button className="btn-create-pro" onClick={() => setShowCreateModal(true)}>
                 ➕ Create Campaign
               </button>
+            </div>
+            <div className="export-actions">
+              <button className="btn-export-csv" onClick={exportToCSV}>📊 Export CSV</button>
+              <button className="btn-export-pdf" onClick={exportToPDF}>📄 Export PDF</button>
             </div>
 
             <div className="search-section">
@@ -658,6 +698,15 @@ const BrandDashboard = () => {
                 <h1>Campaign Analytics</h1>
                 <p className="page-subtitle">Comprehensive insights and performance metrics</p>
               </div>
+            </div>
+
+            <div className="export-actions">
+              <button className="btn-export-csv" onClick={exportToCSV}>
+                📊 Export CSV
+              </button>
+              <button className="btn-export-pdf" onClick={exportToPDF}>
+                📄 Export PDF
+              </button>
             </div>
 
             {campaigns.length === 0 ? (
